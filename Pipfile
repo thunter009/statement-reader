@@ -1,0 +1,28 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+bump2version = "*"
+wheel = "*"
+watchdog = "*"
+pylint = "*"
+pytest = "*"
+flake8 = "*"
+pdbpp = "*"
+tox = "*"
+coverage = "*"
+Sphinx = "*"
+twine = "*"
+ipython = "*"
+
+[packages]
+Click = "*"
+python-dotenv = "*"
+statement-reader = {editable = true, path = "."}
+camelot-py = {extras = ["cv"], version = "*"}
+pipfile = "*"
+
+[requires]
+python_version = "3.9"

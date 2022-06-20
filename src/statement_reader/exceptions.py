@@ -1,0 +1,2 @@
+class InaccuratePDFRead(Exception):
+    pass
