@@ -1,4 +1,5 @@
 import os
+
 from statement_reader.utils import load_env
 
 load_env()
@@ -14,5 +15,5 @@ LOGGING_PATH = '.'
 # out of the box, use the pattern:
 # VARIABLE = os.getenv("VARIABLE", "default")
 
-VALID_PROVIDERS = ['vanguard']
-VALID_PROVIDER_TYPES = ['activity-summary']
+VALID_PROVIDERS = ['vanguard', 'capitalone']
+VALID_PROVIDER_TYPES = ['activity-summary', 'checking']

@@ -1,17 +1,22 @@
 """Console script for statement_reader."""
 import logging
 import sys
+from email.policy import default
+from pathlib import Path
 
 import click
 
 from statement_reader.core import Input
-from statement_reader.providers import VanguardActivitySummary
+from statement_reader.providers import (
+    CapitalOneCheckingTransactions,
+    VanguardActivitySummary,
+)
 from statement_reader.settings import (
     LOGGING_DATE_FORMAT,
     LOGGING_FORMAT,
     LOGGING_PATH,
+    VALID_PROVIDER_TYPES,
     VALID_PROVIDERS,
-    VALID_PROVIDER_TYPES
 )
 
 FILE_NAME = __name__
@@ -53,7 +58,7 @@ def cli(ctx,
 @cli.command('convert')
 @click.argument('type', type=click.Choice(VALID_PROVIDER_TYPES, case_sensitive=False))
 @click.option('-i', '--input', "_input", type=str)
-@click.option('-o', '--output', "_output", type=str)
+@click.option('-o', '--output', "_output", type=str, default=".")
 @CONTEXT
 def convert(ctx,
             type,
@@ -66,12 +71,16 @@ def convert(ctx,
 
     input_files = Input(_input)
 
-    if provider == 'cap':
+    if provider == 'capitalone':
+        
+        if type == 'checking':
+            checking = CapitalOneCheckingTransactions(input_files)
+    
+    if provider == 'vanguard':
         
         if type == 'activity-summary':
             activity_summary = VanguardActivitySummary(input_files)
-        import pdb; pdb.set_trace()
-        pass
+
         
 
 

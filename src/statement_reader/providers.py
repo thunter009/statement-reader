@@ -1,4 +1,7 @@
-import pdb
+import logging.config
+
+logger = logging.getLogger()
+
 from dataclasses import dataclass, field
 
 import camelot
@@ -26,6 +29,7 @@ class BaseProvider(Metadata):
         Ensures a high accuracy parse
         """
         accuracy = table.parsing_report['accuracy']
+        logger.info("PDF Parse accuracy: %s".format(accuracy))
         if accuracy < threshold:
             raise InaccuratePDFRead
 
@@ -69,6 +73,7 @@ class Vanguard(BaseProvider):
         return True
 
 
+
 @dataclass
 class VanguardActivitySummary(Vanguard):
     """
@@ -96,3 +101,63 @@ class VanguardActivitySummary(Vanguard):
             if isinstance(df.columns, RangeIndex):
                 pass
         return tables
+
+@dataclass
+class CapitalOne(BaseProvider):
+    """
+    Capital One service provider.
+
+    Supports different types of Capital One reports and can detect 
+    them based on input in some limited cases/
+    """
+    name: str = default_field("capitalone", init=False, repr=False)
+    type: str = default_field(None, init=False)
+
+    def __post_init__(self):
+        self.data = self.load()
+
+
+@dataclass
+class CapitalOneCheckingTransactions(CapitalOne):
+    """
+    Capital One checking account transaction history parser.
+    """
+    type: str = default_field("checking", init=False)
+
+    def load(self):
+        tables = camelot.read_pdf(
+                                self.input.resolved_path, 
+                                flavor = 'stream', 
+                                # split_text=True,
+                                # row_tol=10,
+                                pages='1-end')
+        for table in tables:
+            self.check_accuracy(table)
+            breakpoint()
+            df = table.df
+
+        return tables
+
+    @staticmethod
+    def is_checking_transactions_table(df: DataFrame) -> bool:
+        """
+        Looks for indicators that a given table is a checking account transaction table.
+
+        df: a pandas DataFrame object that is produced from a camelot pdf read
+        """
+        selector = [
+            ['This statement reflects activity at and/or assets held by separate entities. Brokerage'],
+            ['assets are held by Vanguard Brokerage Services® (VBS), a division of Vanguard Marketing'],
+            ['Corporation (VMC), member FINRA and SIPC. VMC is a wholly owned subsidiary of The'],
+            ['Vanguard Group, Inc. (VGI). Vanguard funds not held through your VBS account are held by'],
+            ['VGI and are not protected by SIPC. Summary data are provided solely as a service and are'],
+            ['for informational purposes only. If applicable, portfolio allocation consists of Vanguard'],
+            ['funds and brokerage assets. For a complete listing of your brokerage assets, refer to the'],
+            ['section titled "Balances and holdings."']
+        ]
+        df_selector = pd.DataFrame(selector)
+        try:
+            assert_frame_equal(df, df_selector)
+        except AssertionError:
+            return False
+        return True

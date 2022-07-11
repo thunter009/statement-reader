@@ -1,4 +1,8 @@
-"""Main module. If include_dataclasses_scaffolding is enabled, you will see Data Class scaffolding here"""
+import logging.config
+
+logger = logging.getLogger()
+
+
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -44,5 +48,8 @@ class Input(Metadata):
         '''
         resolves input path
         '''
-        path = Path(self.path)
+        try:
+            path = Path(self.path)
+        except:
+            breakpoint()
         return str(path.resolve())

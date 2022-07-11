@@ -2,7 +2,7 @@
 
 """The setup script."""
 
-from setuptools import setup, find_namespace_packages
+from setuptools import find_namespace_packages, setup
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -34,7 +34,7 @@ setup(
     description="PDF statement reader library for common financial institutions",
     entry_points={
         'console_scripts': [
-            'statement_reader=statement_reader.cli:cli',
+            'sr=statement_reader.cli:cli',
         ],
     },
     install_requires=requirements,

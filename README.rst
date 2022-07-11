@@ -28,6 +28,11 @@ Features
 
 * TODO
 
+Example Commands
+--------
+
+`sr capitalone convert checking`
+
 Credits
 -------
 
