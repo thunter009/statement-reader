@@ -1,14 +1,11 @@
 import logging.config
-
-logger = logging.getLogger()
-
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 from statement_reader.utils import default_field, now
+
+logger = logging.getLogger()
 
 
 @dataclass
@@ -17,9 +14,8 @@ class Metadata:
     The base metadata object. Contains helper functions and generalized
     metadata
     """
-    parse_time: datetime = default_field(now(),
-                                         init=False,
-                                         repr=False)
+
+    parse_time: datetime = default_field(now(), init=False, repr=False)
 
     def get_parse_time_as_iso(self):
         """
@@ -39,15 +35,16 @@ class Input(Metadata):
     """
     The input data to converted from pdf to csv
     """
-    path: str = field()
+
+    path: str = default_field(".")
 
     def __post_init__(self):
         self.resolved_path = self._resolve_path()
 
     def _resolve_path(self) -> str:
-        '''
+        """
         resolves input path
-        '''
+        """
         try:
             path = Path(self.path)
         except:

@@ -1,8 +1,6 @@
 """Console script for statement_reader."""
 import logging
 import sys
-from email.policy import default
-from pathlib import Path
 
 import click
 
@@ -20,69 +18,69 @@ from statement_reader.settings import (
 )
 
 FILE_NAME = __name__
-logging.basicConfig(level=logging.INFO,
-                    datefmt=LOGGING_DATE_FORMAT,
-                    format=LOGGING_FORMAT,
-                    handlers=[
-                        logging.FileHandler(
-                            f"{LOGGING_PATH}/{FILE_NAME}.log",
-                            encoding=None,
-                            delay=False),
-                        logging.StreamHandler()
-                    ])
+logging.basicConfig(
+    level=logging.INFO,
+    datefmt=LOGGING_DATE_FORMAT,
+    format=LOGGING_FORMAT,
+    handlers=[
+        logging.FileHandler(
+            f"{LOGGING_PATH}/{FILE_NAME}.log", encoding=None, delay=False
+        ),
+        logging.StreamHandler(),
+    ],
+)
 logger = logging.getLogger()
 
 
 class Config:
     """Configuration Object"""
+
+
 CONTEXT = click.make_pass_decorator(Config, ensure=True)
 
+
 @click.group()
-@click.argument('provider', type=click.Choice(VALID_PROVIDERS, case_sensitive=False))
+@click.argument("provider", type=click.Choice(VALID_PROVIDERS, case_sensitive=False))
 @CONTEXT
-def cli(ctx,
-        provider):
-    '''
-        Statement Reader CLI
+def cli(ctx, provider):
+    """
+    Statement Reader CLI
 
-        Python/click based CLI to parse + process common financial institution account and transaction statements.
+    CLI tool to parse and process common financial institution account and transaction
+    statements into usable data files.
 
-        Input options:
-        - local pdf
+    Input options:
+    - local pdf
 
-        Output options:
-        - local csv
-    '''
+    Output options:
+    - local csv
+    """
     ctx.provider = provider
 
-@cli.command('convert')
-@click.argument('type', type=click.Choice(VALID_PROVIDER_TYPES, case_sensitive=False))
-@click.option('-i', '--input', "_input", type=str)
-@click.option('-o', '--output', "_output", type=str, default=".")
+
+@cli.command("convert")
+@click.argument("_type", type=click.Choice(VALID_PROVIDER_TYPES, case_sensitive=False))
+@click.option("-i", "--input", "_input", type=str)
+@click.option("-o", "--output", "_output", type=str, default=".")
 @CONTEXT
-def convert(ctx,
-            type,
-            _input,
-            _output):
-    '''
-        Converts the tables from an input pdf to csv files. Defaults to one aggregated csv per input pdf
-    '''
+def convert(ctx, _type, _input, _output):
+    """
+    Converts the tables from an input pdf to csv files. Defaults to one aggregated csv per input pdf
+    """
     provider = ctx.provider
 
     input_files = Input(_input)
 
-    if provider == 'capitalone':
-        
-        if type == 'checking':
-            checking = CapitalOneCheckingTransactions(input_files)
-    
-    if provider == 'vanguard':
-        
-        if type == 'activity-summary':
-            activity_summary = VanguardActivitySummary(input_files)
+    if provider == "capitalone":
 
-        
+        if _type == "checking":
+            checking = CapitalOneCheckingTransactions(input_files)
+
+    if provider == "vanguard":
+
+        if _type == "activity-summary":
+            activity_summary = VanguardActivitySummary(input_files)
 
 
 if __name__ == "__main__":
-    sys.exit(main())  # pragma: no cover
+    sys.exit(cli())  # pragma: no cover

@@ -16,13 +16,13 @@ coverage = "*"
 Sphinx = "*"
 twine = "*"
 ipython = "*"
+black = "*"
 
 [packages]
-Click = "*"
+click = "*"
 python-dotenv = "*"
-statement-reader = {editable = true, path = "."}
 camelot-py = {extras = ["cv"], version = "*"}
-pipfile = "*"
+statement-reader = {editable = true, path = "."}
 
 [requires]
-python_version = "3.9"
+python_version = "3.11"
